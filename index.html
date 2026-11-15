@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>SANZONE EXCEL</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+:root{--ink:#15171b;--muted:#747983;--line:#e8e9ec;--soft:#f6f7f9;--blue:#2563eb;--green:#16834a;--red:#c24141;--shadow:0 10px 35px #15171b0b}
+*{box-sizing:border-box}body{margin:0;background:#fff;color:var(--ink);font:14px/1.45 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}button,input,select{font:inherit}button{cursor:pointer;border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 13px;color:var(--ink);font-weight:600}button:hover{background:#f7f8fa}button.primary{background:var(--ink);color:white;border-color:var(--ink)}button.danger{color:var(--red)}button:disabled{opacity:.45;cursor:not-allowed}
+.top{height:68px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 22px;position:sticky;top:0;background:#ffffffed;backdrop-filter:blur(12px);z-index:5}.brand{font-weight:850;letter-spacing:.11em;font-size:17px}.brand small{display:block;font-size:9px;letter-spacing:.18em;color:var(--muted);font-weight:650}.topright{display:flex;align-items:center;gap:14px}.clock{font-variant-numeric:tabular-nums;font-weight:700}.status{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}.dot{width:8px;height:8px;border-radius:50%;background:#aaa}.dot.ok{background:#20a464}.dot.bad{background:#d34b4b}
+.layout{display:grid;grid-template-columns:250px minmax(0,1fr);min-height:calc(100vh - 68px)}aside{border-right:1px solid var(--line);padding:20px 14px;background:#fcfcfd}.side-title{font-size:10px;color:#999;letter-spacing:.14em;font-weight:800;margin:16px 10px 8px}.nav{width:100%;text-align:left;border:0;background:transparent;margin:2px 0;font-weight:600}.nav.active,.nav:hover{background:#eff2f6}.sidebottom{margin-top:26px;padding:12px;border:1px solid var(--line);border-radius:13px;background:white}.main{padding:25px;min-width:0;max-width:1500px;width:100%;margin:0 auto}.heading{display:flex;align-items:flex-start;justify-content:space-between;gap:15px;margin-bottom:22px}.heading h1{font-size:25px;margin:0 0 4px;letter-spacing:-.04em}.muted{color:var(--muted)}.actions{display:flex;gap:8px;flex-wrap:wrap}.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;margin-bottom:22px}.card{border:1px solid var(--line);border-radius:15px;padding:17px;background:white;box-shadow:var(--shadow);min-width:0}.card .k{font-size:12px;color:var(--muted);font-weight:600}.card .v{font-size:24px;font-weight:800;letter-spacing:-.04em;margin:7px 0 2px}.card .hint{font-size:11px;color:var(--muted)}.panel{border:1px solid var(--line);border-radius:15px;background:white;overflow:hidden;margin-bottom:18px}.panelhead{padding:15px 17px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px}.panelhead h2{font-size:14px;margin:0}.panelbody{padding:17px}.filelist{width:100%;border-collapse:collapse}.filelist th,.filelist td{padding:13px 16px;text-align:left;border-bottom:1px solid #f0f0f1;font-size:13px}.filelist th{font-size:10px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;background:#fcfcfd}.filelist tr:last-child td{border-bottom:0}.file-actions{display:flex;gap:6px}.file-actions button{padding:6px 9px;font-size:11px}.empty{text-align:center;padding:40px 15px;color:var(--muted)}.empty b{display:block;color:var(--ink);font-size:15px;margin-bottom:5px}
+input,select{border:1px solid var(--line);border-radius:9px;padding:10px 11px;background:white;color:var(--ink);width:100%;outline:none}input:focus,select:focus{border-color:#9ab6f5;box-shadow:0 0 0 3px #2563eb12}label{display:block;font-size:12px;font-weight:700;margin:12px 0 6px}.fieldrow{display:grid;grid-template-columns:1fr 1fr;gap:12px}.help{font-size:11px;color:var(--muted);margin-top:6px}.hidden{display:none!important}.authwrap{max-width:440px;margin:7vh auto;padding:28px;border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}.authwrap h1{margin:0 0 5px}.tabs{display:flex;gap:7px;margin:16px 0}.tabs button{flex:1}.tabs .chosen{background:#15171b;color:white}.notice{border-radius:10px;padding:10px 12px;font-size:12px;background:#f3f6fb;color:#475569;margin:12px 0}.notice.error{background:#fff1f1;color:#a52b2b}.notice.success{background:#effaf3;color:#17643a}
+.editorbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 12px;border-bottom:1px solid var(--line)}.editorbar .grow{flex:1}.sheetname{max-width:160px}.gridwrap{overflow:auto;max-height:calc(100vh - 265px);min-height:300px}.sheetgrid{border-collapse:separate;border-spacing:0;min-width:100%;font-size:12px}.sheetgrid th,.sheetgrid td{border-right:1px solid #e9eaed;border-bottom:1px solid #e9eaed;min-width:112px;height:32px;padding:0}.sheetgrid th{background:#f7f8fa;color:#666;font-weight:700;position:sticky;top:0;z-index:2;min-width:42px}.sheetgrid th:first-child{left:0;z-index:3}.sheetgrid td.rowhead{background:#f7f8fa;text-align:center;color:#777;position:sticky;left:0;min-width:42px;font-weight:700}.sheetgrid td input{border:0;border-radius:0;padding:7px 8px;height:31px;min-width:112px;font-size:12px;box-shadow:none}.sheetgrid td input:focus{outline:2px solid var(--blue);outline-offset:-2px;position:relative;z-index:1}.sheetgrid tr:first-child td input{font-weight:700}.sheet-tabs{display:flex;gap:5px;padding:9px 12px;background:#fcfcfd;border-top:1px solid var(--line);overflow:auto}.sheet-tabs button{font-size:11px;padding:6px 10px;white-space:nowrap}.sheet-tabs .chosen{background:#eaf0ff;border-color:#c9d8ff;color:#1749ad}.progress{height:7px;background:#eff0f2;border-radius:20px;overflow:hidden;margin-top:10px}.progress span{display:block;height:100%;background:#252a32;width:0}.settingsgrid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(280px,.8fr);gap:15px}.small{font-size:11px;color:var(--muted)}.mobilebar{display:none}
+@media(max-width:850px){.layout{grid-template-columns:1fr}aside{display:none}.main{padding:17px 13px 90px}.cards{grid-template-columns:1fr 1fr}.cards .card:last-child{grid-column:span 2}.top{padding:0 13px}.topright .status{display:none}.heading{flex-direction:column}.mobilebar{display:flex;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);padding:8px;justify-content:space-around;z-index:6}.mobilebar button{border:0;font-size:11px;padding:8px}.settingsgrid{grid-template-columns:1fr}.filelist th:nth-child(3),.filelist td:nth-child(3){display:none}.file-actions{flex-wrap:wrap}.clock{font-size:12px}}
+@media(max-width:430px){.cards{gap:8px}.card{padding:12px}.card .v{font-size:20px}.topright{gap:8px}.brand{font-size:15px}.fieldrow{grid-template-columns:1fr}.authwrap{margin:5vh 12px;padding:20px}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand">SANZONE <span style="font-weight:400">EXCEL</span><small>PERSONAL WORKSPACE</small></div>
+  <div class="topright"><div class="status"><span class="dot" id="cloudDot"></span><span id="cloudStatus">Not connected</span></div><div class="clock" id="clock">--:--:--</div><button id="topSignOut" class="hidden">Sign out</button></div>
+</header>
+
+<section id="authScreen" class="authwrap">
+  <div style="font-size:11px;letter-spacing:.15em;color:#777;font-weight:800;margin-bottom:10px">WELCOME TO YOUR WORKSPACE</div>
+  <h1>SANZONE EXCEL</h1><div class="muted">Sign in to access your private cloud spreadsheets.</div>
+  <div class="tabs"><button id="loginTab" class="chosen">Sign in</button><button id="signupTab">Create account</button></div>
+  <label>Email address</label><input id="authEmail" type="email" placeholder="you@example.com" autocomplete="email">
+  <label>Password</label><input id="authPassword" type="password" placeholder="At least 6 characters" autocomplete="current-password">
+  <button class="primary" id="authGo" style="width:100%;margin-top:17px">Sign in</button>
+  <div id="authMsg" class="notice hidden"></div>
+  <p class="help">Your account is managed by Supabase Authentication. If email confirmation is enabled, confirm your email before signing in.</p>
+  <p class="help">First time? Add your Supabase URL and publishable/anon key in Settings after opening the app. Or configure them in the connection panel below.</p>
+  <details style="margin-top:15px"><summary style="cursor:pointer;font-weight:700">Connect Supabase</summary>
+    <label>Project URL</label><input id="authUrl" placeholder="https://your-project.supabase.co">
+    <label>Publishable / anon key</label><input id="authKey" placeholder="sb_publishable_... or legacy anon key">
+    <button id="authConnect" style="margin-top:10px">Save connection</button>
+  </details>
+</section>
+
+<div id="appShell" class="layout hidden">
+<aside>
+  <div class="side-title">WORKSPACE</div>
+  <button class="nav active" data-page="home">▦ &nbsp; Overview</button>
+  <button class="nav" data-page="files">▤ &nbsp; My Excel Files</button>
+  <button class="nav" data-page="settings">⚙ &nbsp; Settings</button>
+  <div class="sidebottom"><div class="small">CLOUD STORAGE</div><div id="sideStorage" style="font-weight:800;font-size:18px;margin-top:4px">0 B</div><div class="progress"><span id="sideProgress"></span></div><div class="small" id="sideStorageHint" style="margin-top:6px">Connect to view files</div></div>
+  <div class="sidebottom"><div class="small">SIGNED IN AS</div><div id="sideEmail" style="font-weight:700;overflow-wrap:anywhere;margin-top:5px">—</div><button id="sideSignOut" style="margin-top:12px;width:100%">Sign out</button></div>
+</aside>
+<main class="main">
+<section id="page-home">
+  <div class="heading"><div><h1>Overview</h1><div class="muted">Your spreadsheets, organized in one place.</div></div><div class="actions"><button id="newFromHome" class="primary">＋ New workbook</button><button id="uploadFromHome">↑ Upload Excel</button></div></div>
+  <div class="cards">
+    <div class="card"><div class="k">TOTAL WORKBOOKS</div><div class="v" id="totalFiles">0</div><div class="hint">Saved in your cloud</div></div>
+    <div class="card"><div class="k">STORAGE USED</div><div class="v" id="totalStorage">0 B</div><div class="hint">Across your SANZONE files</div></div>
+    <div class="card"><div class="k">LOCAL TIME</div><div class="v" id="liveTime">--:--</div><div class="hint" id="liveDate">—</div></div>
+  </div>
+  <div class="panel"><div class="panelhead"><h2>Recent workbooks</h2><button data-goto="files">View all</button></div><div id="recentList"></div></div>
+  <div class="panel"><div class="panelhead"><h2>Storage overview</h2><span class="small">Your saved workbook files</span></div><div class="panelbody"><div style="display:flex;justify-content:space-between;gap:10px"><b id="storageValue">0 B used</b><span class="small">Supabase Storage</span></div><div class="progress"><span id="mainProgress"></span></div><div class="help">This shows the total size of files listed in your SANZONE account. It is not the full project-wide Supabase quota meter.</div></div></div>
+</section>
+<section id="page-files" class="hidden">
+  <div class="heading"><div><h1>My Excel Files</h1><div class="muted">Create, upload, edit and download your workbooks.</div></div><div class="actions"><button id="newFromFiles" class="primary">＋ New workbook</button><button id="uploadFromFiles">↑ Upload Excel</button></div></div>
+  <div class="panel"><div class="panelhead"><h2>All workbooks</h2><input id="fileSearch" placeholder="Search files..." style="max-width:230px"></div><div id="allFiles"></div></div>
+</section>
+<section id="page-settings" class="hidden">
+  <div class="heading"><div><h1>Settings</h1><div class="muted">Manage your cloud connection and workspace.</div></div></div>
+  <div class="settingsgrid">
+    <div class="panel"><div class="panelhead"><h2>Supabase connection</h2><span class="small" id="settingsConnState">Not connected</span></div><div class="panelbody">
+      <label>Supabase Project URL</label><input id="settingsUrl" placeholder="https://your-project.supabase.co">
+      <label>Supabase Publishable Key / legacy anon key</label><input id="settingsKey" placeholder="sb_publishable_... or eyJ...">
+      <div class="help">Use only the public publishable key (or legacy anon key). Never paste a service_role or secret key here.</div>
+      <div class="actions" style="margin-top:15px"><button class="primary" id="saveSettings">Save & connect</button><button id="disconnect">Disconnect</button></div>
+      <div id="settingsMsg" class="notice hidden"></div>
+    </div></div>
+    <div class="panel"><div class="panelhead"><h2>Storage & security</h2></div><div class="panelbody">
+      <div class="small">YOUR FILE STORAGE</div><div id="settingsStorage" style="font-size:25px;font-weight:850;margin:5px 0">0 B</div><div class="progress"><span id="settingsProgress"></span></div>
+      <p class="help">The dashboard totals files in your account. Supabase's project-wide storage quota and billing are checked in the Supabase dashboard.</p>
+      <hr style="border:0;border-top:1px solid var(--line);margin:18px 0">
+      <b>Privacy basics</b><ul class="help" style="padding-left:18px;line-height:1.8"><li>Private bucket; files are not public.</li><li>Database and storage policies restrict access to the signed-in owner.</li><li>Connection values are saved in this browser only.</li><li>Sign out when using a shared device.</li></ul>
+    </div></div>
+  </div>
+  <div class="panel"><div class="panelhead"><h2>Initial setup</h2></div><div class="panelbody"><ol class="help" style="line-height:1.9"><li>Create a Supabase project.</li><li>Run the included <b>supabase_setup.sql</b> in SQL Editor.</li><li>Copy Project URL and the publishable key (or legacy anon key) into the fields above.</li><li>Create an account / sign in. If email confirmation is enabled, confirm your email.</li><li>Create a workbook. It will be stored in the private <b>sanzone-excel</b> bucket.</li></ol><p class="help">The SQL setup creates the private bucket, file metadata table and owner-only Row Level Security policies.</p></div></div>
+</section>
+<section id="page-editor" class="hidden">
+  <div class="heading"><div><button id="backFiles">← Back to files</button><h1 id="editorTitle" style="margin-top:12px">Workbook</h1><div class="muted" id="saveState">Unsaved changes</div></div><div class="actions"><button id="renameBook">Rename</button><button id="addSheet">＋ Sheet</button><button id="downloadBook">Download .xlsx</button><button class="primary" id="saveBook">Save to cloud</button></div></div>
+  <div class="panel">
+    <div class="editorbar"><span class="small">SHEET</span><select id="sheetSelect" class="sheetname"></select><span class="grow"></span><button id="addRow">＋ Row</button><button id="addCol">＋ Column</button><button id="refreshGrid">Refresh</button></div>
+    <div class="gridwrap"><table class="sheetgrid" id="sheetGrid"></table></div>
+    <div class="sheet-tabs" id="sheetTabs"></div>
+  </div>
+  <div class="help">Tip: Tap any cell to edit. Changes are kept in this editor until you save to cloud or download the workbook. Use the sheet selector to switch sheets.</div>
+</section>
+</main>
+</div>
+<nav class="mobilebar hidden" id="mobileNav"><button data-page="home">▦<br>Home</button><button data-page="files">▤<br>Files</button><button data-page="settings">⚙<br>Settings</button></nav>
+<input id="uploadInput" type="file" accept=".xlsx,.xls,.csv" class="hidden">
+<script>
+(() => {
+const $=id=>document.getElementById(id);
+const BUCKET='sanzone-excel', TABLE='sanzone_excel_files';
+let client=null, session=null, files=[], workbook=null, currentFile=null, currentSheet='', authMode='login', dirty=false;
+const cfg=()=>({url:localStorage.getItem('sz_supabase_url')||'',key:localStorage.getItem('sz_supabase_key')||''});
+function msg(el,text,type=''){el.textContent=text;el.className='notice'+(type?' '+type:'');el.classList.remove('hidden')}
+function clearMsg(el){el.classList.add('hidden')}
+function setCloud(ok,text){$('cloudDot').className='dot '+(ok?'ok':'bad');$('cloudStatus').textContent=text;$('settingsConnState').textContent=text}
+function fmtBytes(n){if(!n)return'0 B';const u=['B','KB','MB','GB'];let i=0;while(n>=1024&&i<u.length-1){n/=1024;i++}return n.toFixed(i?1:0)+' '+u[i]}
+function clock(){const d=new Date();$('clock').textContent=d.toLocaleTimeString('en-IN',{hour12:true});$('liveTime').textContent=d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});$('liveDate').textContent=d.toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'short',year:'numeric'})}
+setInterval(clock,1000);clock();
+function makeClient(url,key){if(!window.supabase){throw Error('Supabase library could not load. Check your internet connection.')}return window.supabase.createClient(url,key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}})}
+function connectFromStorage(){const c=cfg();if(!c.url||!c.key){setCloud(false,'Not connected');return false}try{client=makeClient(c.url,c.key);setCloud(true,'Connected');$('settingsUrl').value=c.url;$('settingsKey').value=c.key;$('authUrl').value=c.url;$('authKey').value=c.key;return true}catch(e){setCloud(false,'Connection error');return false}}
+async function saveConnection(url,key){url=url.trim().replace(/\/$/,'');key=key.trim();if(!/^https:\/\/.+\.supabase\.co$/.test(url))throw Error('Enter a valid Supabase Project URL (https://….supabase.co).');if(!key)throw Error('Enter your publishable / anon key.');client=makeClient(url,key);localStorage.setItem('sz_supabase_url',url);localStorage.setItem('sz_supabase_key',key);setCloud(true,'Connected');$('settingsUrl').value=url;$('settingsKey').value=key;$('authUrl').value=url;$('authKey').value=key;return true}
+function showApp(){ $('authScreen').classList.add('hidden');$('appShell').classList.remove('hidden');$('mobileNav').classList.remove('hidden');$('topSignOut').classList.remove('hidden');$('sideEmail').textContent=session.user.email||'Signed in';refreshFiles()}
+function showAuth(){ $('authScreen').classList.remove('hidden');$('appShell').classList.add('hidden');$('mobileNav').classList.add('hidden');$('topSignOut').classList.add('hidden')}
+function page(name){['home','files','settings','editor'].forEach(p=>$('page-'+p).classList.toggle('hidden',p!==name));document.querySelectorAll('.nav').forEach(b=>b.classList.toggle('active',b.dataset.page===name));if(name==='files')renderFiles();if(name==='home')renderRecent()}
+document.querySelectorAll('[data-page]').forEach(b=>b.addEventListener('click',()=>page(b.dataset.page)));
+document.querySelectorAll('[data-goto]').forEach(b=>b.addEventListener('click',()=>page(b.dataset.goto)));
+$('loginTab').onclick=()=>{authMode='login';$('loginTab').classList.add('chosen');$('signupTab').classList.remove('chosen');$('authGo').textContent='Sign in';$('authPassword').autocomplete='current-password'};
+$('signupTab').onclick=()=>{authMode='signup';$('signupTab').classList.add('chosen');$('loginTab').classList.remove('chosen');$('authGo').textContent='Create account';$('authPassword').autocomplete='new-password'};
+$('authConnect').onclick=async()=>{try{await saveConnection($('authUrl').value,$('authKey').value);msg($('authMsg'),'Supabase connection saved. You can now sign in.','success')}catch(e){msg($('authMsg'),e.message,'error')}};
+$('authGo').onclick=async()=>{try{if(!client){const c=cfg();if(!c.url||!c.key)throw Error('Connect Supabase first.');connectFromStorage()}const email=$('authEmail').value.trim(),password=$('authPassword').value;if(!email||!password)throw Error('Enter email and password.');$('authGo').disabled=true;$('authGo').textContent='Please wait…';let r=authMode==='signup'?await client.auth.signUp({email,password}):await client.auth.signInWithPassword({email,password});if(r.error)throw r.error;if(authMode==='signup'&&!r.data.session){msg($('authMsg'),'Account created. Check your email to confirm it, then sign in.','success')}else{session=r.data.session;showApp()} }catch(e){msg($('authMsg'),e.message,'error')}finally{$('authGo').disabled=false;$('authGo').textContent=authMode==='signup'?'Create account':'Sign in'}};
+async function signOut(){if(client)await client.auth.signOut();session=null;showAuth()}
+$('topSignOut').onclick=$('sideSignOut').onclick=signOut;
+$('saveSettings').onclick=async()=>{try{await saveConnection($('settingsUrl').value,$('settingsKey').value);msg($('settingsMsg'),'Connection saved in this browser.','success');if(session)await refreshFiles()}catch(e){msg($('settingsMsg'),e.message,'error')}};
+$('disconnect').onclick=()=>{localStorage.removeItem('sz_supabase_url');localStorage.removeItem('sz_supabase_key');client=null;setCloud(false,'Disconnected');msg($('settingsMsg'),'Connection details removed from this browser. You have not deleted your cloud files.','success')};
+async function refreshFiles(){if(!client||!session)return;try{const {data,error}=await client.from(TABLE).select('*').order('updated_at',{ascending:false});if(error)throw error;files=data||[];renderStats();renderFiles();renderRecent()}catch(e){console.error(e);setCloud(false,'Setup required');if(e.message.includes('does not exist'))alert('Database setup missing. Run supabase_setup.sql in Supabase SQL Editor.');}}
+function renderStats(){const total=files.reduce((s,f)=>s+(Number(f.size_bytes)||0),0);$('totalFiles').textContent=files.length;$('totalStorage').textContent=fmtBytes(total);$('storageValue').textContent=fmtBytes(total)+' used';$('settingsStorage').textContent=fmtBytes(total);$('sideStorage').textContent=fmtBytes(total);const pct=Math.min(100,total/(100*1024*1024)*100);['mainProgress','sideProgress','settingsProgress'].forEach(id=>$(id).style.width=pct+'%');$('sideStorageHint').textContent=files.length+' workbook(s) · visual guide only'}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function listHTML(items){if(!items.length)return'<div class="empty"><b>No workbooks yet</b>Create a workbook or upload an existing Excel file.</div>';return `<table class="filelist"><thead><tr><th>Name</th><th>Last updated</th><th>Size</th><th>Actions</th></tr></thead><tbody>${items.map(f=>`<tr><td><b>▤ ${esc(f.name)}</b></td><td>${new Date(f.updated_at).toLocaleString('en-IN')}</td><td>${fmtBytes(f.size_bytes)}</td><td><div class="file-actions"><button data-open="${f.id}">Open</button><button data-down="${f.id}">Download</button><button class="danger" data-del="${f.id}">Delete</button></div></td></tr>`).join('')}</tbody></table>`}
+function attachFileActions(root){root.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>openFile(b.dataset.open));root.querySelectorAll('[data-down]').forEach(b=>b.onclick=()=>downloadCloud(b.dataset.down));root.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>deleteCloud(b.dataset.del))}
+function renderFiles(){const q=($('fileSearch').value||'').toLowerCase();const arr=files.filter(f=>f.name.toLowerCase().includes(q));$('allFiles').innerHTML=listHTML(arr);attachFileActions($('allFiles'))}
+function renderRecent(){if(!$('recentList'))return;const el=$('recentList');el.innerHTML=listHTML(files.slice(0,5));attachFileActions(el)}
+$('fileSearch').oninput=renderFiles;
+async function createWorkbook(){const name=prompt('Workbook name:','My Workbook');if(name===null)return;const clean=name.trim()||'My Workbook';workbook=XLSX.utils.book_new();const ws=XLSX.utils.aoa_to_sheet([['Column A','Column B','Column C'],['','',''],['','','']]);XLSX.utils.book_append_sheet(workbook,ws,'Sheet1');currentSheet='Sheet1';currentFile={id:crypto.randomUUID(),name:clean,storage_path:null};dirty=true;openEditor();renderGrid()}
+$('newFromHome').onclick=$('newFromFiles').onclick=createWorkbook;
+$('uploadFromHome').onclick=$('uploadFromFiles').onclick=()=>$('uploadInput').click();
+$('uploadInput').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const data=await f.arrayBuffer();workbook=XLSX.read(data,{type:'array',cellDates:true});currentFile={id:crypto.randomUUID(),name:f.name.replace(/\.(xlsx|xls|csv)$/i,''),storage_path:null};currentSheet=workbook.SheetNames[0]||'Sheet1';if(!workbook.Sheets[currentSheet])workbook.Sheets[currentSheet]=XLSX.utils.aoa_to_sheet([[]]);dirty=true;openEditor();renderGrid()}catch(err){alert('Could not open this file: '+err.message)}finally{e.target.value=''}};
+function openEditor(){page('editor');$('editorTitle').textContent=currentFile.name;renderSheetOptions();renderGrid();setDirty(true)}
+function setDirty(v){dirty=v;$('saveState').textContent=v?'Unsaved changes':'All changes saved';$('saveState').style.color=v?'#a66b16':'#16834a'}
+function renderSheetOptions(){const names=workbook.SheetNames;$('sheetSelect').innerHTML=names.map(n=>`<option ${n===currentSheet?'selected':''}>${esc(n)}</option>`).join('');$('sheetTabs').innerHTML=names.map(n=>`<button class="${n===currentSheet?'chosen':''}" data-sheet="${esc(n)}">${esc(n)}</button>`).join('');$('sheetTabs').querySelectorAll('[data-sheet]').forEach(b=>b.onclick=()=>{currentSheet=b.dataset.sheet;renderSheetOptions();renderGrid()})}
+$('sheetSelect').onchange=()=>{currentSheet=$('sheetSelect').value;renderSheetOptions();renderGrid()};
+function renderGrid(){if(!workbook||!workbook.Sheets[currentSheet])return;const ws=workbook.Sheets[currentSheet];let range=ws['!ref']?XLSX.utils.decode_range(ws['!ref']):{s:{r:0,c:0},e:{r:19,c:9}};let rows=Math.max(20,Math.min(100,range.e.r+1)),cols=Math.max(10,Math.min(26,range.e.c+1));let h='<thead><tr><th>#</th>'+Array.from({length:cols},(_,c)=>`<th>${XLSX.utils.encode_col(c)}</th>`).join('')+'</tr></thead><tbody>';for(let r=0;r<rows;r++){h+=`<tr><td class="rowhead">${r+1}</td>`;for(let c=0;c<cols;c++){const a=XLSX.utils.encode_cell({r,c}),cell=ws[a],v=cell?cell.w??cell.v??'':'';h+=`<td><input data-cell="${a}" aria-label="${a}" value="${esc(v)}"></td>`}h+='</tr>'}h+='</tbody>';$('sheetGrid').innerHTML=h;$('sheetGrid').querySelectorAll('input[data-cell]').forEach(inp=>{inp.onchange=()=>{const addr=inp.dataset.cell;const val=inp.value;if(val===''){delete ws[addr]}else{const old=ws[addr]||{};ws[addr]={...old,t:(!isNaN(val)&&val.trim()!=='')?'n':'s',v:(!isNaN(val)&&val.trim()!=='')?Number(val):val};}const ref=ws['!ref']?XLSX.utils.decode_range(ws['!ref']):{s:{r:0,c:0},e:{r:0,c:0}};const p=XLSX.utils.decode_cell(addr);ref.e.r=Math.max(ref.e.r,p.r);ref.e.c=Math.max(ref.e.c,p.c);ws['!ref']=XLSX.utils.encode_range(ref);setDirty(true)}})}
+$('addRow').onclick=()=>{const ws=workbook.Sheets[currentSheet],r=ws['!ref']?XLSX.utils.decode_range(ws['!ref']).e.r+1:0;for(let c=0;c<10;c++)ws[XLSX.utils.encode_cell({r,c})]={t:'s',v:''};ws['!ref']=`A1:J${r+1}`;setDirty(true);renderGrid()};
+$('addCol').onclick=()=>{const ws=workbook.Sheets[currentSheet],range=ws['!ref']?XLSX.utils.decode_range(ws['!ref']):{s:{r:0,c:0},e:{r:19,c:9}},c=range.e.c+1;for(let r=0;r<=range.e.r;r++)ws[XLSX.utils.encode_cell({r,c})]={t:'s',v:''};range.e.c=c;ws['!ref']=XLSX.utils.encode_range(range);setDirty(true);renderGrid()};
+$('refreshGrid').onclick=renderGrid;
+$('addSheet').onclick=()=>{let n=prompt('New sheet name:','Sheet'+(workbook.SheetNames.length+1));if(!n)return;n=n.trim();if(!n||workbook.SheetNames.includes(n)){alert('Enter a unique sheet name.');return}XLSX.utils.book_append_sheet(workbook,XLSX.utils.aoa_to_sheet([[]]),n);currentSheet=n;renderSheetOptions();renderGrid();setDirty(true)};
+$('renameBook').onclick=()=>{const n=prompt('Rename workbook:',currentFile.name);if(n&&n.trim()){currentFile.name=n.trim();$('editorTitle').textContent=currentFile.name;setDirty(true)}};
+function workbookBlob(){const arr=XLSX.write(workbook,{bookType:'xlsx',type:'array'});return new Blob([arr],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})}
+$('downloadBook').onclick=()=>{const blob=workbookBlob(),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=currentFile.name+'.xlsx';a.click();URL.revokeObjectURL(url)};
+$('saveBook').onclick=saveCurrent;
+async function saveCurrent(){if(!client||!session){alert('Please connect and sign in first.');return}try{$('saveBook').disabled=true;$('saveBook').textContent='Saving…';const blob=workbookBlob(),path=session.user.id+'/'+currentFile.id+'.xlsx';const {error:upErr}=await client.storage.from(BUCKET).upload(path,blob,{contentType:blob.type,upsert:true});if(upErr)throw upErr;const row={id:currentFile.id,owner_id:session.user.id,name:currentFile.name,storage_path:path,size_bytes:blob.size,updated_at:new Date().toISOString()};const {error:dbErr}=await client.from(TABLE).upsert(row,{onConflict:'id'});if(dbErr)throw dbErr;currentFile.storage_path=path;setDirty(false);await refreshFiles()}catch(e){alert('Save failed: '+e.message+'\nCheck that supabase_setup.sql has been run.')}finally{$('saveBook').disabled=false;$('saveBook').textContent='Save to cloud'}}
+async function openFile(id){const f=files.find(x=>x.id===id);if(!f)return;try{const {data,error}=await client.storage.from(BUCKET).download(f.storage_path);if(error)throw error;workbook=XLSX.read(await data.arrayBuffer(),{type:'array',cellDates:true});currentFile={...f};currentSheet=workbook.SheetNames[0];openEditor()}catch(e){alert('Could not open workbook: '+e.message)}}
+async function downloadCloud(id){const f=files.find(x=>x.id===id);if(!f)return;try{const {data,error}=await client.storage.from(BUCKET).download(f.storage_path);if(error)throw error;const url=URL.createObjectURL(data),a=document.createElement('a');a.href=url;a.download=f.name+'.xlsx';a.click();URL.revokeObjectURL(url)}catch(e){alert('Download failed: '+e.message)}}
+async function deleteCloud(id){const f=files.find(x=>x.id===id);if(!f||!confirm('Delete "'+f.name+'" permanently from cloud?'))return;try{const {error:sErr}=await client.storage.from(BUCKET).remove([f.storage_path]);if(sErr)throw sErr;const {error:dErr}=await client.from(TABLE).delete().eq('id',id);if(dErr)throw dErr;await refreshFiles()}catch(e){alert('Delete failed: '+e.message)}}
+$('backFiles').onclick=()=>{if(dirty&&!confirm('You have unsaved changes. Leave editor?'))return;page('files')};
+connectFromStorage();
+if(client){client.auth.getSession().then(({data})=>{session=data.session;if(session)showApp()}).catch(console.error);client.auth.onAuthStateChange((_event,s)=>{session=s;if(s)showApp();else showAuth()})}
+})();
+</script>
+</body>
+</html>
